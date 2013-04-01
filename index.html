@@ -2,6 +2,10 @@
 layout: default
 ---
 
+<section>
+{% assign first_post = site.posts.first %}
+{{ first_post.content }}
+</section>
 <section class="posts hfeed">
 {% for post in site.posts %}
 {% unless post.link or rendered_one %}
