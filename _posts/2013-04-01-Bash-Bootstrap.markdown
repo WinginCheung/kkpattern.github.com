@@ -55,7 +55,7 @@ export -f workon
 
 接着我们要让workon根据参数去调用`~/.bash_bootstrap`文件夹内相应的脚本。
 
-```
+```bash
 function workon {
   file=~/.bash_bootstrap/"$1".sh
 
