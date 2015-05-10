@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kai Zhang</title>
+    <description>Kai Zhang's blog.
+</description>
+    <link>/</link>
+    <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Sun, 10 May 2015 12:54:23 +0800</pubDate>
+    <lastBuildDate>Sun, 10 May 2015 12:54:23 +0800</lastBuildDate>
+    <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Bash Bootstrap</title>
+        <description>&lt;h1&gt;Bash Bootstrap&lt;/h1&gt;
+
+&lt;h2&gt;需求&lt;/h2&gt;
+
+&lt;p&gt;每次启动terminal开始某项工作的时候都要执行一串机械的操作。例如进入指定的文件夹，启动特定的python environment等：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; ~/Projects/some/project/path
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;pyenv/bin/activate
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;对与一个程序员来说，任何重复执行的机械操作都应该让电脑来做。于是我尝试了如何通过bash来完成这些准备工作。&lt;/p&gt;
+
+&lt;h2&gt;使用bash脚本&lt;/h2&gt;
+
+&lt;p&gt;最简单的方法就是将这些代码放到一个bash脚本中：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; ~/Projects/some/project/path
+&lt;span class=&quot;nb&quot;&gt;source &lt;/span&gt;pyenv/bin/activate
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;然后在启动terminal之后执行&lt;code&gt;source some_project.sh&lt;/code&gt;就可以了。&lt;/p&gt;
+
+&lt;p&gt;这个方法简单直接，如果在某段时间内手里只有一个或者很少的几个项目，那么这样的方法就足够了。但是假设我们有很多项目同时在工作，这个方法就有点过于简单了。不同项目的bootstrap脚本遍布在文件夹内很不好管理，而且从一个项目切换到另一个项目也不够方便。受到virtualenvwrapper的启发，我向bash添加了一个workon命令来管理所有的bootstrap脚本。&lt;/p&gt;
+
+&lt;h2&gt;Bash Bootstrap&lt;/h2&gt;
+
+&lt;p&gt;我们的目标是当我们想开始某个项目的工作时，只需要输入&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;workon some_project
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;就可以自动执行相应的bootstrap脚本。&lt;/p&gt;
+
+&lt;p&gt;首先是向bash环境添加workon命令，将如下代码添加到&lt;code&gt;~/.bashrc&lt;/code&gt;文件内即可:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;k&quot;&gt;function&lt;/span&gt; workon &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export&lt;/span&gt; -f workon
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;当然现在的workon命令还不会执行任何动作。接下来我们要让workon命令根据参数去调用相关的bootstrap脚本。我选择在&lt;code&gt;home&lt;/code&gt;目录下建立了一个存放bootstrap脚本的文件夹：&lt;code&gt;.bash_bootstrap&lt;/code&gt;。然后将各个项目的bootstrap脚本放入这个文件夹即可。&lt;/p&gt;
+
+&lt;p&gt;接着我们要让workon根据参数去调用&lt;code&gt;~/.bash_bootstrap&lt;/code&gt;文件夹内相应的脚本。&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;function workon {
+  file=~/.bash_bootstrap/&amp;quot;$1&amp;quot;.sh
+
+  if [ -f $file ]; then
+    source $file
+  else
+    echo &amp;quot;$file is not found&amp;quot;
+  fi
+}
+export -f workon
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;这样，当我们输入&lt;code&gt;workon some_project&lt;/code&gt;的时候，bash就会自动执行该项目的bootstrap脚本了。&lt;/p&gt;
+
+&lt;p&gt;除了这些简单的代码以外，我们还可以添加参数检查，根据参数来调整bootstrap执行的细节等，这些都可以根据大家实际工作的项目情况来完善。基本的Bootstrap工作便介绍完了，如果你有更好的方法也欢迎通过github或者邮箱告诉我。&lt;/p&gt;
+</description>
+        <pubDate>Mon, 01 Apr 2013 00:00:00 +0800</pubDate>
+        <link>/2013/04/01/Bash-Bootstrap.html</link>
+        <guid isPermaLink="true">/2013/04/01/Bash-Bootstrap.html</guid>
+        
+        
+      </item>
+    
+  </channel>
+</rss>

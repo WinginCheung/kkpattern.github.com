@@ -1,5 +1,6 @@
 ---
 layout: post
+comments: true
 ---
 
 Bash Bootstrap
@@ -9,9 +10,11 @@ Bash Bootstrap
 ----
 每次启动terminal开始某项工作的时候都要执行一串机械的操作。例如进入指定的文件夹，启动特定的python environment等：
 
-    $ cd ~/Projects/some/project/path
-    $ source pyenv/bin/activate
-    $ ...
+```bash
+$ cd ~/Projects/some/project/path
+$ source pyenv/bin/activate
+$ ...
+```
 
 对与一个程序员来说，任何重复执行的机械操作都应该让电脑来做。于是我尝试了如何通过bash来完成这些准备工作。
 
@@ -19,10 +22,12 @@ Bash Bootstrap
 -----------
 最简单的方法就是将这些代码放到一个bash脚本中：
 
-    #!/bin/bash
-    cd ~/Projects/some/project/path
-    source pyenv/bin/activate
-    ...
+```bash
+#!/bin/bash
+cd ~/Projects/some/project/path
+source pyenv/bin/activate
+...
+```
 
 然后在启动terminal之后执行`source some_project.sh`就可以了。
 
@@ -32,30 +37,36 @@ Bash Bootstrap
 --------------
 我们的目标是当我们想开始某个项目的工作时，只需要输入
 
-    workon some_project
+```bash
+workon some_project
+```
 
 就可以自动执行相应的bootstrap脚本。
 
 首先是向bash环境添加workon命令，将如下代码添加到`~/.bashrc`文件内即可:
 
-    function workon {
-    }
-    export -f workon
+```bash
+function workon {
+}
+export -f workon
+```
 
 当然现在的workon命令还不会执行任何动作。接下来我们要让workon命令根据参数去调用相关的bootstrap脚本。我选择在`home`目录下建立了一个存放bootstrap脚本的文件夹：`.bash_bootstrap`。然后将各个项目的bootstrap脚本放入这个文件夹即可。
 
 接着我们要让workon根据参数去调用`~/.bash_bootstrap`文件夹内相应的脚本。
 
-    function workon {
-      file=~/.bash_bootstrap/"$1".sh
-     
-      if [ -f $file ]; then
-        source $file
-      else
-        echo "$file is not found"
-      fi
-    }
-    export -f workon
+```
+function workon {
+  file=~/.bash_bootstrap/"$1".sh
+
+  if [ -f $file ]; then
+    source $file
+  else
+    echo "$file is not found"
+  fi
+}
+export -f workon
+```
 
 这样，当我们输入`workon some_project`的时候，bash就会自动执行该项目的bootstrap脚本了。
 
