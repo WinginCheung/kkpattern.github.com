@@ -100,16 +100,16 @@
 <p>当然现在的workon命令还不会执行任何动作。接下来我们要让workon命令根据参数去调用相关的bootstrap脚本。我选择在<code>home</code>目录下建立了一个存放bootstrap脚本的文件夹：<code>.bash_bootstrap</code>。然后将各个项目的bootstrap脚本放入这个文件夹即可。</p>
 
 <p>接着我们要让workon根据参数去调用<code>~/.bash_bootstrap</code>文件夹内相应的脚本。</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">function workon {
-  file=~/.bash_bootstrap/&quot;$1&quot;.sh
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="k">function</span> workon <span class="o">{</span>
+  <span class="nv">file</span><span class="o">=</span>~/.bash_bootstrap/<span class="s2">&quot;$1&quot;</span>.sh
 
-  if [ -f $file ]; then
-    source $file
-  else
-    echo &quot;$file is not found&quot;
-  fi
-}
-export -f workon
+  <span class="k">if</span> <span class="o">[</span> -f <span class="nv">$file</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">source</span> <span class="nv">$file</span>
+  <span class="k">else</span>
+    <span class="nb">echo</span> <span class="s2">&quot;$file is not found&quot;</span>
+  <span class="k">fi</span>
+<span class="o">}</span>
+<span class="nb">export</span> -f workon
 </code></pre></div>
 <p>这样，当我们输入<code>workon some_project</code>的时候，bash就会自动执行该项目的bootstrap脚本了。</p>
 

@@ -6,9 +6,73 @@
 </description>
     <link>/</link>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 10 May 2015 12:54:23 +0800</pubDate>
-    <lastBuildDate>Sun, 10 May 2015 12:54:23 +0800</lastBuildDate>
+    <pubDate>Sun, 10 May 2015 18:47:22 +0800</pubDate>
+    <lastBuildDate>Sun, 10 May 2015 18:47:22 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>好用的Vim插件</title>
+        <description>&lt;p&gt;分享三个最近在工作中使用较多, 能提高效率的Vim插件.&lt;/p&gt;
+
+&lt;h2&gt;1. Ag&lt;/h2&gt;
+
+&lt;p&gt;Ag本身(又叫&lt;a href=&quot;https://github.com/ggreer/the_silver_searcher&quot;&gt;the silver searcher&lt;/a&gt;)并不是一个Vim插件, 而是一个代码搜索工具. 其特点是使用了非常高效的搜索算法, 同时可以通过配置文件对需要搜索的文件进行过滤以进一步提供搜索效率. 在实际使用中Ag比grep和ack快一个数量级. 另外还有一个被称为&lt;a href=&quot;https://github.com/monochromegane/the_platinum_searcher&quot;&gt;the platinum searcher&lt;/a&gt;的项目, 其搜索速度略微快过Ag. 考虑到Ag已经是一个非常成熟稳定的项目, 我还是选择了使用Ag.&lt;/p&gt;
+
+&lt;p&gt;在类Unix系统上安装Ag比较简单, 在Ag的&lt;a href=&quot;https://github.com/ggreer/the_silver_searcher&quot;&gt;github首页&lt;/a&gt;上有详细的介绍.
+在Windows平台上需要自己从源码编译. 如果不想这么麻烦可以使用&lt;a href=&quot;https://chocolatey.org/&quot;&gt;Chocolatey&lt;/a&gt;这个支持Windows的Package Manager进行安装, 不过Chocolatey上的Ag版本可能会过时. 安装好Ag后在命令行中运行&lt;code&gt;ag some_code /path/to/project&lt;/code&gt;就可以很快得到匹配的结果.&lt;/p&gt;
+
+&lt;p&gt;在安装好Ag后再安装上&lt;a href=&quot;https://github.com/rking/ag.vim&quot;&gt;ag.vim&lt;/a&gt;这个插件, 就可以很方便的在Vim中通过命令&lt;code&gt;:Ag [options] {pattern} [{directory}]&lt;/code&gt;搜索想要的代码. 所有搜索到的代码都会按文件和行号排序并显示在Vim的quick-fix窗口中. ag.vim还提供若干命令方便用户快速的在新窗口(或者tab页)中打开在quick-fix窗口中所选择的代码位置.&lt;/p&gt;
+
+&lt;p&gt;为了进一步方便在Vim中使用Ag, 可以在vimrc文件中添加&lt;code&gt;nmap &amp;lt;c-t&amp;gt; :Ag! &amp;quot;&amp;quot;&amp;lt;left&amp;gt;&lt;/code&gt;. &lt;code&gt;Ag!&lt;/code&gt;使得你在搜索代码时Vim不会默认直接打开搜索的第一个结果.&lt;/p&gt;
+
+&lt;p&gt;根据所在的平台和Vim版本, 使用ag.vim时可能会遇到一个搜索结果被泄露到terminal中的bug. 具体表现是在搜索过程中所有搜索到的结果会在terminal中刷出来然后再切换回Vim显示正常结果. 为了解决这个问题可以将autoload/ag.vim中执行
+&lt;code&gt;silent! execute a:cmd . &amp;quot; &amp;quot; . escape(l:grepargs, &amp;#39;|&amp;#39;)&lt;/code&gt;之前设置好对应变量:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;  let l:grepprg_bak=&amp;amp;grepprg
+  let l:grepformat_bak=&amp;amp;grepformat
+  let l:t_ti_bak=&amp;amp;t_ti
+  let l:t_te_bak=&amp;amp;t_te
+  let l:shellpipe_bak=&amp;amp;shellpipe
+  try
+    let &amp;amp;shellpipe=&amp;quot;&amp;amp;&amp;gt;&amp;quot;
+    let &amp;amp;grepprg=g:ag_prg
+    let &amp;amp;grepformat=g:ag_format
+    set t_ti=
+    set t_te=
+    silent! execute a:cmd . &amp;quot; &amp;quot; . escape(l:grepargs, &amp;#39;|&amp;#39;)
+  finally
+    let &amp;amp;grepprg=l:grepprg_bak
+    let &amp;amp;grepformat=l:grepformat_bak
+    let &amp;amp;t_ti=l:t_ti_bak
+    let &amp;amp;t_te=l:t_te_bak
+    let &amp;amp;shellpipe=l:shellpipe_bak
+  endtry
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;2. CtrlP&lt;/h2&gt;
+
+&lt;p&gt;Sublime的一个王牌功能就是通过ctrl+p快捷键进入文件名模糊搜索模式. 能快速找到项目内需要编辑的文件. 在Vim中有一个名叫&lt;a href=&quot;https://github.com/kien/ctrlp.vim&quot;&gt;CtrlP&lt;/a&gt;的插件可以提供相同的功能.&lt;/p&gt;
+
+&lt;p&gt;安装好Ctrlp后使用相当简单, 按下ctrl+p后CtrlP会列出当前项目内的所有文件(及路径)名. 同时提供一个命令行供用户输入要搜索的文件名. 如图:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/wvp_ctrlp.png&quot; alt=&quot;CtrlP&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;用户可以通过&lt;code&gt;ctrl+j&lt;/code&gt;和&lt;code&gt;ctrl+k&lt;/code&gt;上下选择要打开的文件, 通过&lt;code&gt;enter&lt;/code&gt;在当前window中打开文件, 通过&lt;code&gt;ctrl+o&lt;/code&gt;选择打开文件的方式.
+在开始使用CtrlP以后我就很少再使用Nerdtree了. 不过Nerdtree在浏览一个新的项目的代码时还是非常重要的, 能够方便我们快速熟悉该项目的代码结构.&lt;/p&gt;
+
+&lt;h2&gt;3. Syntastic&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/scrooloose/syntastic&quot;&gt;Syntastic&lt;/a&gt;是一个用来检查程序语法的Vim插件, 支持的语言非常之多, 其原因是Syntastic本身并不做语法检查, 而是根据文件类型调用对应的外部语法检查工具进行语法检查, 然后再将结果以统一的方式显示在Vim中. 举例来说Syntastic可以使用flake8来检查Python语法. 首先安装flake8:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;pip install flake8
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;然后在使用Vim编辑python文件时, 每当用户保存源代码文件时Syntastic都会自动调用flake8对代码进行语法检查, 如图所示&lt;img src=&quot;/assets/wvp_flake8.png&quot; alt=&quot;flake8&quot;&gt;.&lt;/p&gt;
+
+&lt;p&gt;对于Python这样的动态语言, 语法检查能够在实际运行程序之前发现不少错误, 节省开发时间.&lt;/p&gt;
+</description>
+        <pubDate>Sat, 09 May 2015 00:00:00 +0800</pubDate>
+        <link>/2015/05/09/Wonderful-Vim-Plugins.html</link>
+        <guid isPermaLink="true">/2015/05/09/Wonderful-Vim-Plugins.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>Bash Bootstrap</title>
@@ -50,16 +114,16 @@
 &lt;p&gt;当然现在的workon命令还不会执行任何动作。接下来我们要让workon命令根据参数去调用相关的bootstrap脚本。我选择在&lt;code&gt;home&lt;/code&gt;目录下建立了一个存放bootstrap脚本的文件夹：&lt;code&gt;.bash_bootstrap&lt;/code&gt;。然后将各个项目的bootstrap脚本放入这个文件夹即可。&lt;/p&gt;
 
 &lt;p&gt;接着我们要让workon根据参数去调用&lt;code&gt;~/.bash_bootstrap&lt;/code&gt;文件夹内相应的脚本。&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;function workon {
-  file=~/.bash_bootstrap/&amp;quot;$1&amp;quot;.sh
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;k&quot;&gt;function&lt;/span&gt; workon &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;file&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;~/.bash_bootstrap/&lt;span class=&quot;s2&quot;&gt;&amp;quot;$1&amp;quot;&lt;/span&gt;.sh
 
-  if [ -f $file ]; then
-    source $file
-  else
-    echo &amp;quot;$file is not found&amp;quot;
-  fi
-}
-export -f workon
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt; -f &lt;span class=&quot;nv&quot;&gt;$file&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$file&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;$file is not found&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;fi&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;export&lt;/span&gt; -f workon
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;这样，当我们输入&lt;code&gt;workon some_project&lt;/code&gt;的时候，bash就会自动执行该项目的bootstrap脚本了。&lt;/p&gt;
 
