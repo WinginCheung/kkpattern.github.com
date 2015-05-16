@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title: Embed Mermaid Charts in Jekyll
+title: Embed Mermaid Charts in Jekyll without Plugin
 ---
 
 Jekyll is a blog system with which you can use markdown to write your post.
@@ -50,7 +50,11 @@ graph TD;
 </div>
 ```
 
-That's all. And we just need to do a little work for mermaid to work in jekyll.
+That's all. And jekyll has a [plugin](https://github.com/jasonbellamy/jekyll-mermaid)
+to to simplify the creation of mermaid diagrams and flowcharts in your posts and pages.
+However, for safety reasons, if you want github automatically transform your post into
+web pages, you can't use a plugin. So here I'll show you how to make mermaid work in
+jekyll without plugin.
 
 First, we need to [download](https://github.com/knsv/mermaid) the javascript
 code of mermaid. You can download the stable version by choosing the versioned
