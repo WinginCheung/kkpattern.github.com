@@ -2,6 +2,7 @@
 layout: post
 comments: true
 title: Embed Mermaid Charts in Jekyll without Plugin
+mermaid: true
 ---
 
 Jekyll is a blog system with which you can use markdown to write your post.
