@@ -18,6 +18,8 @@ To use sentry, you can either pay for the [service](http://getsentry.com) manage
 
 ## Preparation
 
+### Dummy Server
+
 In order to test our notification plugin, first we will write a dummy server to receive the nofications.
 With `python-gevent` we can write one very quickly.
 
@@ -40,6 +42,23 @@ if __name__ == "__main__":
 
 The `gevent.server.StreamServer` will handle in-coming connections and call `handle_notify` for each accepted socket, concurrently. In the `handle_notify` function, we simply print the message sent from plugin to test if it's alright.
 
+### Dummy Client
+
+Besides the dummy server, we also need a dummy client to trigger the error thus send the message to sentry. Sentry support almost any language and there are many client library for us to use.
+Here we choose python language and [raven-python](https://github.com/getsentry/raven-python) and it will be very simple:
+
+```python
+import raven
+
+client = raven.Client(dsn=sentry_dsn)
+
+try:
+	1/0
+except Exception:
+	client.captureException()
+```
+
+The sentry_dsn will be the dsn address of your sentry server. Now when you run script by `python dummy_client.py`, a error message will be sent to sentry to trigger the notification.
 
 ## Structure
 
@@ -136,3 +155,5 @@ server.
 There are more information you can get from `group` and `event`. In fact, you can get
 `group` from `event`. You can look at `sentry.models.event.Event` and `sentry.model.group.Group`
 for more information.
+
+Now, run the dummy client and you should see the notification message in dummy server.
