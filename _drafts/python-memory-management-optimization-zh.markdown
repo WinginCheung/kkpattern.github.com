@@ -31,23 +31,25 @@ Python有两种共存的内存管理机制: *引用计数*和*垃圾回收*. 引
 
 ```Python
 import gc
+
 import objgraph
-
-class A(object):
-    pass
-
-class B(object):
-    pass
 
 gc.disable()
 
-a = A()
-b = B()
-del a
-del b()
 
-print 'Object count of A:', objgraph.count('A')
-print 'Object count of B:', objgraph.count('B')
+class A(object):
+	pass
+
+class B(object):
+	pass
+
+def test1():
+	a = A()
+	b = B()
+
+test1()
+print objgraph.count('A')
+print objgraph.count('B')
 ```
 
 上面程序的执行结果为:
@@ -57,33 +59,27 @@ Object count of A: 0
 Object count of B: 0
 ```
 
-可以看到, 我们创建了一个类`A`的对象, 并用变量`a`引用起来, 然后用`del a`删除这个引用.
-`objgraph.count('A')`返回0, 意味着内存中'A'的对象数量没有增长.
+在`test1`中, 我们分别创建了类`A`和类`B`的对象, 并用变量`a`, `b`引用起来.
+当`test1`调用结束后`objgraph.count('A')`返回0, 意味着内存中`A`的对象数量
+没有增长. 同理`B`的对象数量也没有增长. 注意我们通过`gc.disable()`关闭了
+Python的垃圾回收, 因此`test1`中生产的对象是在函数调用结束引用计数为0时被自
+动删除的.
 
-引用计数的一个主要缺点是无法自动处理循环引用. 将上面的代码稍做修改:
+引用计数的一个主要缺点是无法自动处理循环引用. 继续上面的代码:
 
 ```Python
-import gc
-import objgraph
+def test2():
+    a = A()
+    b = B()
+    a.child = b
+    b.parent = a
 
-class A(object):
-    pass
-
-class B(object):
-    pass
-
-gc.disable()
-
-a = A()
-b = B()
-a.child = b
-b.parent = a
-del a
-del b
-
+test2()
 print 'Object count of A:', objgraph.count('A')
 print 'Object count of B:', objgraph.count('B')
-print 'Unreachable object count:', gc.collect()
+gc.collect()
+print 'Object count of A:', objgraph.count('A')
+print 'Object count of B:', objgraph.count('B')
 ```
 
 在上面的代码的执行结果为:
@@ -91,14 +87,16 @@ print 'Unreachable object count:', gc.collect()
 ```Bash
 Object count of A: 1
 Object count of B: 1
-Unreachable object count: 2
+Object count of A: 0
+Object count of B: 0
 ```
 
-我们创建了类A和类B的两个对象, 并分别用变量a和变量b引用他们. 然后我们利用`child`和`parent`属性将两个对象相互引用
-起来. 这就形成了一个循环引用. 当我们执行`del a`和`del b`的时候，表面上我们不再引用两个对象, 但由于两个对象相互
-引用着对方, 因此引用计数不为0, 则不会被自动回收. 更糟糕的是由于现在没有任何变量引用他们, 我们无法再找到这两个变量
-并清除. Python使用垃圾回收机制来处理这样的情况. 执行`gc.collect()`, Python垃圾回收器回收了两个相互引用的对象, 并
-返回2.
+`test1`相比`test2`的改变是将`A`和`B`的对象通过`child`和`parent`相互引用
+起来. 这就形成了一个循环引用. 当`test2`调用结束后, 表面上我们不再引用两个对象,
+但由于两个对象相互引用着对方, 因此引用计数不为0, 则不会被自动回收.
+更糟糕的是由于现在没有任何变量引用他们, 我们无法再找到这两个变量并清除.
+Python使用垃圾回收机制来处理这样的情况. 执行`gc.collect()`, Python垃圾
+回收器回收了两个相互引用的对象, 之后`A`和`B`的对象数又变为0.
 
 # TODO: 垃圾回收机制.
 # TODO: 调优手段: 1. 手动GC; 2. 调高阈值; 3. 手动解引用.
