@@ -153,9 +153,76 @@ Python的垃圾回收的threshold0为10000, 则不会触发垃圾回收. 若干�
 的不同, 甚至是程序输入的不同, 合适的阈值也不同. 因此需要反复测试找到一个合适的阈值, 这也算调高阈值这种手段
 的一个缺点.
 
-### 手动解循环引用
+### 避免循环引用
 
-一个可能更好的方法是使用良好的编程习惯尽可能的手动解开程序中的循环引用.
+一个可能更好的方法是使用良好的编程习惯尽可能的避免循环引用. 两种常见的手段包括: 手动解循环引用和使用弱引用.
 
-[//]: # "TODO: 调优手段: 1. 手动GC; 2. 调高阈值; 3. 手动解引用."
+#### 手动解循环引用
+
+手动解循环引用指在编写代码时写好解开循环引用的代码, 在一个对象使用结束不再需要是调用. 例如:
+
+```Python
+class A(object):
+    def __init__(self):
+        self.child = None
+
+    def destroy(self):
+        self.child = None
+
+class B(object):
+    def __init__(self):
+        self.parent = None
+
+    def destroy(self):
+        self.parent = None
+
+def test3():
+    a = A()
+    b = B()
+    a.child = b
+    b.parent = a
+    a.destroy()
+    b.destroy()
+
+test3()
+print 'Object count of A:', objgraph.count('A')
+print 'Object count of B:', objgraph.count('B')
+```
+
+上面代码的运行结果为:
+
+```Bash
+Object count of A: 0
+Object count of B: 0
+```
+
+#### 使用弱引用
+
+弱引用指当引用一个对象时, 不增加该对象的引用计数, 当需要使用到该对象的时候需要首先检查该对象是否还存在.
+弱引用的实现方式有多种, Python自带一个弱引用库`weakref`, 其详细文档参加[这里](https://docs.python.org/2/library/weakref.html).
+使用`weakref`改写我们的代码:
+
+```Python
+def test4():
+    a = A()
+    b = B()
+    a.child = weakref.ref(b)
+    b.parent = weakref.ref(a)
+
+test4()
+print 'Object count of A:', objgraph.count('A')
+print 'Object count of B:', objgraph.count('B')
+```
+
+上面代码的运行结果为:
+
+```Bash
+Object count of A: 0
+Object count of B: 0
+```
+
+除了使用Python自带的`weakref`库以外, 通常我们也可以根据自己项目的业务逻辑实现弱引用. 例如在游戏开发中, 通常很多对象都是有
+其唯一的ID的. 在引用一个对象时我们可以保存其ID而不是直接引用该对象. 在需要使用该对象的时候首先根据ID去检查该对象是否存在.
+
+[//]: # "TODO: 测试三种手动的效率."
 [//]: # "TODO: 检测循环引用的手段."
