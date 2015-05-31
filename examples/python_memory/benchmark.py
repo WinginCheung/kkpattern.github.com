@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import argparse
-import time
+import timeit
 import gc
 import resource
 import sys
@@ -14,25 +14,6 @@ ATTRIBUTE_NAME_LIST = None
 
 def parse_arguments():
 	parser = argparse.ArgumentParser()
-	parser.add_argument(
-		"-g",
-		"--disable-gc",
-		action="store_true",
-		help="Disable gc.")
-	parser.add_argument(
-		"-t",
-		"--gc-threshold0",
-		type=int,
-		help="GC threshold0. If gc is not enabled this parameter is omitted.")
-	parser.add_argument(
-		"-u",
-		"--unloop-model",
-		type=int,
-		choices=[0, 1, 2],
-		default=0,
-		help=(
-			"Unloop model. 0: do not unloop; 1: unloop manually;"
-			"2: unloop by weakref."))
 	parser.add_argument(
 		"-i",
 		"--max-iteration",
@@ -57,6 +38,12 @@ def parse_arguments():
 		type=int,
 		default=20,
 		help="The attribute count in a monster.")
+	parser.add_argument(
+		"-p",
+		"--plot-path",
+		type=str,
+		default="benchmark.png",
+		help="The path of the benchmark result plot.")
 	return parser.parse_args()
 
 
@@ -92,7 +79,7 @@ def run_logic(
 		unloop_model):
 	iter_timer_list = []
 	for i in xrange(max_iteration):
-		begin_at = time.time()
+		begin_at = timeit.default_timer()
 		for dc in xrange(dungeon_per_iter):
 			dungeon = Dungeon()
 			for mc in xrange(monster_per_dungeon):
@@ -103,7 +90,7 @@ def run_logic(
 				dungeon.add_monster(monster)
 			if unloop_model == 1:
 				dungeon.destroy()
-		end_at = time.time()
+		end_at = timeit.default_timer()
 		iter_timer_list.append(end_at-begin_at)
 	return iter_timer_list
 
@@ -125,10 +112,6 @@ def run_test_and_plot(
 
 def main():
 	arguments = parse_arguments()
-	if arguments.disable_gc:
-		gc.disable()
-	elif arguments.gc_threshold0 is not None:
-		gc.set_threshold(arguments.gc_threshold0)
 	Monster.ATTRIBUTE_NAME_LIST = [
 		"attribute_{0}".format(i) for i in xrange(arguments.attribute_count)]
 
@@ -151,7 +134,7 @@ def main():
 			unloop_model)
 	lgd = plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
 	plt.savefig(
-		"benchmark.png", bbox_extra_artists=[lgd,], bbox_inches="tight")
+		arguments.plot_path, bbox_extra_artists=[lgd,], bbox_inches="tight")
 
 
 if __name__ == "__main__":
