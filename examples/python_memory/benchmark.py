@@ -134,7 +134,7 @@ def main():
 
 	test_list = [
 		("GC(threshold0:700)", 700, 0),
-		("GC(threshold0:10000)", 700, 0),
+		("GC(threshold0:10000)", 10000, 0),
 		("Manual", None, 1),
 		("Weakref", None, 2),
 	]
