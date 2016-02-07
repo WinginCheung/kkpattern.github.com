@@ -9,7 +9,7 @@ title: Python内存管理机制及优化简析
 为了方便解释Python的内存管理机制, 本文使用了`gc`模块来辅助展示内存中的Python对象以及Python垃圾回收器的工作情况.
 本文中具体使用到的接口包括:
 
-```Python
+```python
 gc.disable()  # 暂停自动垃圾回收.
 gc.collect()  # 执行一次完整的垃圾回收, 返回垃圾回收所找到无法到达的对象的数量.
 gc.set_threshold()  # 设置Python垃圾回收的阈值.
@@ -20,7 +20,7 @@ gc.set_debug()  # 设置垃圾回收的调试标记. 调试信息会被写入std
 
 同时我们还使用了`objgraph`Python库, 本文中具体使用到的接口包括:
 
-```Python
+```python
 objgraph.count(typename)  # 对于给定类型typename, 返回Python垃圾回收器正在跟踪的对象个数.
 ```
 
@@ -31,7 +31,7 @@ objgraph.count(typename)  # 对于给定类型typename, 返回Python垃圾回收
 Python有两种共存的内存管理机制: *引用计数*和*垃圾回收*. 引用计数是一种非常高效的内存管理手段, 当一个Python对象被引
 用时其引用计数增加1, 当其不再被一个变量引用时则计数减1. 当引用计数等于0时对象被删除.
 
-```Python
+```python
 import gc
 
 import objgraph
@@ -69,7 +69,7 @@ Python的垃圾回收, 因此`test1`中生产的对象是在函数调用结束�
 
 引用计数的一个主要缺点是无法自动处理循环引用. 继续上面的代码:
 
-```Python
+```python
 def test2():
     a = A()
     b = B()
@@ -163,7 +163,7 @@ Python的垃圾回收的threshold0为10000, 则不会触发垃圾回收. 若干�
 
 手动解循环引用指在编写代码时写好解开循环引用的代码, 在一个对象使用结束不再需要时调用. 例如:
 
-```Python
+```python
 class A(object):
     def __init__(self):
         self.child = None
@@ -204,7 +204,7 @@ Object count of B: 0
 弱引用的实现方式有多种, Python自带一个弱引用库`weakref`, 其详细文档参加[这里](https://docs.python.org/2/library/weakref.html).
 使用`weakref`改写我们的代码:
 
-```Python
+```python
 def test4():
     a = A()
     b = B()
