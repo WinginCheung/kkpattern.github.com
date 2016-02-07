@@ -9,5 +9,7 @@ baseurl: "" # the subpath of your site, e.g. /blog/
 github_username:  kkpattern
 
 # Build settings
-# markdown: kramdown
-markdown: redcarpet
+markdown: kramdown
+
+kramdown:
+  input: GFM

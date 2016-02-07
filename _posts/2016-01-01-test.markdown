@@ -1,0 +1,12 @@
+---
+layout: post
+comments: true
+title: 测试
+---
+
+## 测试
+
+```python
+gc.disable()
+gc.collect()
+```
