@@ -51,8 +51,10 @@ PaaS提供了一种方便快捷的web部署方式. 通过支持特定的语言, 
    1. 创建`requirements.txt`文件
       为了告诉ACE服务器安装必须的python库, 我们需要在项目根目录中创建一个`requirements.txt`文件. 对于我们的项目, 该文件的内容为:
 
-      > mysql-python
-      > django==1.9
+      ```
+      mysql-python
+      django==1.9
+      ```
 
       因为我们稍后需要访问ACE自带的MySQL协议的云数据库, 因为我们需要安装`mysql-python`这个库. 同时我们通过`django==1.9`告诉ACE我们需要安装1.9版本的django.
 
